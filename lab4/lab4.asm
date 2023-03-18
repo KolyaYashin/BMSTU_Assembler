@@ -24,8 +24,8 @@ DSEGMATRIX ENDS
 
 CSEG SEGMENT PARA PUBLIC 'CODE'
 	assume CS:CSEG, DS:DSEG, ES:DSEGMATRIX, SS:SSEG
-	
-	
+
+
 output:
 	mov AH,9
 	int 21h
@@ -64,7 +64,7 @@ output_row:
 	mov cl, memcx
 	add bl,n
 loop output_row
-ret	
+ret
 
 
 
@@ -88,7 +88,7 @@ input:
 	mov ah,1 ; считывание символа с экрана - количество столбцов
 	int 21h
 	mov n_new,al
-	
+
 	mov dl,10 ; перевод каретки на новую строку
 	mov ah,2h
 	int 21h
@@ -106,7 +106,7 @@ input:
 	mov si,0 ; индекс для обращения к столбцу
 
 	input_column:
-		mov ah,1 ; считывание символа с экрана 
+		mov ah,1 ; считывание символа с экрана
 		int 21h
 		mov symb,al
 
@@ -123,7 +123,7 @@ input:
 	mov dl,10 ; перевод каретки на новую строку для красивого вывода
 	mov ah,2h
 	int 21h
-	
+
 	xor cx,cx
 	mov cl, memcx ; возвращаемся к внешнему циклу
 	add bl,n
@@ -139,81 +139,81 @@ task:
 	sar cl, 1
 	mov bx, 0
 HALF_ROWS:
-	MOV MEMCX, CL
-	XOR CX,CX
-	MOV CL,N_NEW
-	SUB CL,30H
-	MOV SI,0
-	
+	mov MEMCX, CL
+	xor CX,CX
+	mov CL,N_NEW
+	sub CL,30H
+	mov SI,0
+
 	CHANGE:  ;SWAP MATRIX[BX][SI] AND MATRIX[M_NEW - BX][SI]
-		MOV DH, MATRIX[BX][SI]     
-		
-		mov membx, BL      
-		xor BX,BX          
-		mov BL, m_new     
+		MOV DH, MATRIX[BX][SI]
+
+		mov membx, BL
+		xor BX,BX
+		mov BL, m_new
 		dec BL
-		sub BL, 30h    
+		sub BL, 30h
 		;BX*N
 		mov AL, N
 		mul BL
 		mov BL, AL
-		
-		sub BL, membx           
-		
-		
+
+		sub BL, membx
+
+
 		MOV DL,MATRIX[BX][SI]
 		xor BX,BX
 		mov BL, membx
 		mov MATRIX[BX][SI], DL
-		
-		mov membx, BL      
-		xor BX,BX          
-		mov BL, m_new     
+
+		mov membx, BL
+		xor BX,BX
+		mov BL, m_new
 		dec BL
-		sub BL, 30h    
+		sub BL, 30h
 		;BX*N
 		mov AL, N
 		mul BL
 		mov BL, AL
-		
-		sub BL, membx      
-		
-		
+
+		sub BL, membx
+
+
 		MOV MATRIX[BX][SI], DH
 		xor BX,BX
 		mov BL, membx
-		
-		
+
+
 		INC SI
 	LOOP CHANGE
 
 
-	XOR CX,CX
-	MOV CL, MEMCX
-	ADD BL,N
- DEC CX
+	xor CX,CX
+	mov CL, MEMCX
+	add BL,N
+ dec CX
  jne HALF_ROWS
 ret
 
-main:        
+main:
     mov ax, DSEG
-    mov ds, ax 
-    
+    mov ds, ax
+
     mov ax, DSEGMATRIX
-    mov es, ax 
-	
-	call input 
+    mov es, ax
+
+	call input
 
 	mov dx, OFFSET mesOutputBefore
 	call output
-	
+
 	call task
 
 	mov dx, OFFSET mesOutputAfter
 	call output
-	
+
     mov ax, 4c00h
     int 21h
-	
+
 CSEG ENDS
 END main
